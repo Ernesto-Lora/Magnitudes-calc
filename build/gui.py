@@ -32,11 +32,13 @@ def k(A, tau):
 
 def magnitudes():
     w = float(Weight.get())
-    speed = float( Speed.get() )
+    speed = float( Speed.get() ) #Input in km/h
+    speed = 0.2777*speed
+
     Len = float(Length.get() )
     Rad = float(Radious.get())
     
-    A = 0.3*0.3*Len*0.35*Len
+    A = 0.6*(0.4*Len)*(0.4*Len)
     
     Force.delete(0, END)
     forc = k(A,0.3)*speed**2
@@ -107,6 +109,46 @@ Weight.place(x=350, y=190)
 #e1.pack()
 
 
+
+canvas.create_text(
+    38.0,
+    275.0,
+    anchor="nw",
+    text="Boat’s Length (m) ",
+    fill="#1E1E1E",
+    font=("JacquesFrancois Regular", 32 * -1)
+)
+
+
+Length = Entry(window,width=13, borderwidth=entryBorders , font=(14))
+Length.place(x=350, y=275+8)
+
+
+canvas.create_text(
+    52.0,
+    376.0,
+    anchor="nw",
+    text="Speed(Km/h)",
+    fill="#1E1E1E",
+    font=("JacquesFrancois Regular", 32 * -1)
+)
+
+Speed = Entry(window,width=13, borderwidth=entryBorders , font=(14))
+Speed.place(x=350, y=376+8)
+
+
+canvas.create_text(
+    13.0,
+    487.0,
+    anchor="nw",
+    text="Propeler Radious (m)",
+    fill="#1E1E1E",
+    font=("JacquesFrancois Regular", 32 * -1)
+)
+Radious = Entry(window,width=13, borderwidth=entryBorders , font=(14))
+Radious.place(x=350, y=487+8)
+
+
 canvas.create_text(
     554.0,
     185.0,
@@ -130,43 +172,10 @@ canvas.create_text(
 Force = Entry(window,width=13, borderwidth=entryBorders , font=(14))
 Force.place(x=554+300, y=275+8)
 
-canvas.create_text(
-    38.0,
-    275.0,
-    anchor="nw",
-    text="Boat’s Length (m) ",
-    fill="#1E1E1E",
-    font=("JacquesFrancois Regular", 32 * -1)
-)
 
 
-Length = Entry(window,width=13, borderwidth=entryBorders , font=(14))
-Length.place(x=350, y=275+8)
 
 
-canvas.create_text(
-    52.0,
-    376.0,
-    anchor="nw",
-    text="Speed(m/s)",
-    fill="#1E1E1E",
-    font=("JacquesFrancois Regular", 32 * -1)
-)
-
-Speed = Entry(window,width=13, borderwidth=entryBorders , font=(14))
-Speed.place(x=350, y=376+8)
-
-
-canvas.create_text(
-    13.0,
-    487.0,
-    anchor="nw",
-    text="Propeler Radious (m)",
-    fill="#1E1E1E",
-    font=("JacquesFrancois Regular", 32 * -1)
-)
-Radious = Entry(window,width=13, borderwidth=entryBorders , font=(14))
-Radious.place(x=350, y=487+8)
 
 ComputeMagnitudes = Button(window, text = "Compute Magnitudes", font= 14,
                            padx = 40, pady = 20, command=magnitudes)
