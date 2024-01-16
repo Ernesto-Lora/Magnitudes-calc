@@ -3,10 +3,11 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 
 
-from pathlib import Path
+import os
+script_directory = os.path.dirname(os.path.abspath(__file__))
+frame0_dic = os.path.join(script_directory, "assets", "frame0" )
 
-# from tkinter import *
-# Explicit imports to satisfy Flake8
+
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, END
 import numpy as np
 
@@ -57,7 +58,7 @@ canvas.place(x = 0, y = 0)
 
 #This is the image
 image_image_1 = PhotoImage(
-    file="assets/frame0/image_1.png" )
+    file= os.path.join(frame0_dic, "image_1.png" ) )
 image_1 = canvas.create_image(
     235.0,
     61.0,
