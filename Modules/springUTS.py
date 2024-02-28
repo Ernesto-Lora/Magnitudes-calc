@@ -5,6 +5,10 @@ import numpy as np
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
+from matplotlib.figure import Figure
+import io
 
 import os
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -49,10 +53,10 @@ class springUTS:
                             font=16)
         
         self.showVariables = Button(master = self.root,
-                            width = 12,
+                            width = 20,
                             height = 1,  
                             command = self.showVariablesImage,
-                            text = "Show Variables",
+                            text = "Spring Variables Diagram",
                             font=14)
          
         self.computeFactorButton = Button(master = self.root,
@@ -112,13 +116,14 @@ class springUTS:
         ax.hlines(y=y0[0], xmin=0, xmax=1e04, color='Blue')
         ax.hlines(y=y0[1], xmin=1e5, xmax=1.5e05, color='Blue')
 
-        ax.plot(x, y1, label = "New Fatigue", color = "green")
+        ax.plot(x, y1, label = "Material + Spring Fatigue", color = "green")
         ax.hlines(y=y1[0], xmin=0, xmax=1e04, color="green")
         ax.hlines(y=y1[1], xmin=1e5, xmax=1.5e05, color="green")
 
         #plt.xlabel("Cycles")
         ax.set_xticks([])
         ax.set_ylabel("Stress Amplitde (Mpa)")
+        ax.set_xlabel("cycles")
         ax.set_title("SN Curve")
         ax.legend()
     
@@ -206,24 +211,42 @@ class springUTS:
         self.canvas.create_text(46.0, 185.0+2*80, anchor="nw", text="Number of Active Coils n",
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
+
         self.activeCoils.place(x=xButtons, y=190+2*80)
         self.activeCoils.insert(0, 20)
         
         #length
-        self.canvas.create_text(38.0, 185.0+3*80, anchor="nw", text="Spring Length L0 \n (No compression) (cm) ",
+        fig = Figure(figsize=(4, 1), dpi=100)
+        ax = fig.add_subplot(111)
+        ax.text(0.5, 0.5, r"Spring Length $L_0$", fontsize=22, ha='center')
+        ax.axis('off')  # Turn off the axes
+
+        # Convert the figure to an image
+        buf = io.BytesIO()
+        FigureCanvas(fig).print_png(buf)
+        buf.seek(0)
+        img = PhotoImage(data=buf.read())
+        # Display the image on the canvas
+        self.canvas.create_image(20, 170.0+3*80, anchor=NW, image=img)
+
+        self.canvas.create_text(38.0, 225.0+3*80, anchor="nw", text= "(No compression) (cm) ",
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.length.place(x=xButtons, y=190+3*80)
         self.length.insert(0, 5)
 
         #UTS
-        self.canvas.create_text(38.0, 185.0+4.5*80, anchor="nw", text="Ultimate Tensile Strength\n (Spring Material) (MPa) ",
+        self.canvas.create_text(38.0, 185.0+4.5*80, anchor="nw", text="Ultimate Tensile Strength \nUTS (Spring Material) (MPa) ",
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.UTS.place(x=xButtons, y=190+4.5*80)
         self.UTS.insert(0, 980)
 
         ############## Output
+
+        #Input
+        self.canvas.create_text(700.0, 120.0, anchor="nw", text="Output:",
+                                fill="#1E1E1E", font=(font, 32 * -1) )
 
         # Ultimate stress correction factor
         self.canvas.create_text(xButtons+150, 185.0, anchor="nw", text=" Ultimate Stress Correction Factor ",
@@ -244,7 +267,7 @@ class springUTS:
                 0.6*1170,
                 0.65*630,
             anchor="nw",
-            text="Show Modified SN Curve",
+            text="Show SN Curve",
             fill="#1E1E1E",
             font=("JacquesFrancois Regular", 32 * -1)
         )
