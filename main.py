@@ -1,7 +1,35 @@
+import subprocess
+import sys
+import os
+
+try:
+    import numpy as pd
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", 'pandas'])
+finally:
+    import numpy as pd
+
+try:
+    import matplotlib
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", 'matplotlib'])
+finally:
+    import matplotlib
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 from ast import main
 from distutils.util import change_root
 from tkinter import *
-import numpy as np
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt

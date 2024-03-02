@@ -1,6 +1,5 @@
 
 from tkinter import *
-
 import numpy as np
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -11,6 +10,18 @@ from matplotlib.figure import Figure
 import io
 
 import os
+import sys
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS2
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 script_directory = os.path.dirname(os.path.abspath(__file__))
 images_dic = os.path.join(script_directory, "Images" )
 
@@ -35,10 +46,11 @@ class springUTS:
         )
 
         self.image_image_1 = PhotoImage(
-            file= os.path.join(images_dic, "logo.png" ) )
+            file= resource_path( os.path.join("Modules","Images", "logo.png" ) ) )
         
         self.variablesImage = PhotoImage(
-            file= os.path.join(images_dic, "variables.png" ) )
+            file= resource_path(os.path.join("Modules","Images", "variables.png" )) )
+        
 
         #Define buttons
         entryBorders = 5

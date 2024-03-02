@@ -2,14 +2,27 @@
 from mimetypes import init
 from tkinter import *
 
+import sys
+import os
+
 import numpy as np
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
-import os
+
 script_directory = os.path.dirname(os.path.abspath(__file__))
 images_dic = os.path.join(script_directory, "Images" )
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS2
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 def kmhToMs(velocity):
@@ -39,7 +52,7 @@ class shockAbs:
         )
 
         self.image_image_1 = PhotoImage(
-            file= os.path.join(images_dic, "logo.png" ) )
+            file= resource_path( os.path.join("Modules","Images", "logo.png" ) ) )
 
         #Define buttons
         entryBorders = 5
@@ -137,18 +150,21 @@ class shockAbs:
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.Velocity.place(x=350, y=190+80)
+        self.Velocity.insert(0, 30)
         
         #Distance
         self.canvas.create_text(46.0, 185.0+2*80, anchor="nw", text="Mean Distance (m) ",
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.Distance.place(x=350, y=190+2*80)
+        self.Distance.insert(0, 20)
         
         #Slope
         self.canvas.create_text(38.0, 185.0+3*80, anchor="nw", text="Slope (Degree) ",
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.Slope.place(x=350, y=190+3*80)
+        self.Slope.insert(0, 0)
 
         #Heatmap Text
         self.canvas.create_text(

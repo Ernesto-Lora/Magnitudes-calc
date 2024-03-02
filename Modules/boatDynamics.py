@@ -1,14 +1,27 @@
 
 from tkinter import *
-
 import numpy as np
+
+import sys
+import os
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
-import os
 script_directory = os.path.dirname(os.path.abspath(__file__))
 images_dic = os.path.join(script_directory, "Images" )
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS2
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 
 def kmhToMs(velocity):
     """
@@ -36,7 +49,7 @@ class boatDinamics:
         )
 
         self.image_image_1 = PhotoImage(
-            file= os.path.join(images_dic, "logo.png" ) )
+            file= resource_path( os.path.join("Modules","Images", "logo.png" ) ) )
         
         #define all the Entries
         entryBorders = 5
@@ -106,35 +119,45 @@ class boatDinamics:
             font=(font, 48 * -1)
         )
 
+        #Weigth
         self.canvas.create_text(46.0, 185.0, anchor="nw", text="Weight (kg)",
                            fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.Weight.place(x=350, y=190)
+        self.Weight.insert(0, 1500)
 
+        # Boat’s Length
         self.canvas.create_text(
             38.0, 275.0, anchor="nw", text="Boat’s Length (m) ",
             fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.Length.place(x=350, y=275+8)
+        self.Length.insert(0, 3)
 
+        #Speed
         self.canvas.create_text(52.0, 376.0, anchor="nw", text="Speed(Km/h)",
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.Speed.place(x=350, y=376+8)
+        self.Speed.insert(0, 30)
+
+        #Propeller radious
 
         self.canvas.create_text(
             13.0, 487.0, anchor="nw", text="Propeler Radious (m)",
             fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.Radious.place(x=350, y=487+8)
+        self.Radious.insert(0, 1.5)
 
         #Output
-
+        #Motor Speed
         self.canvas.create_text(554.0, 185.0, anchor="nw", text="Motor Speed (rpm) ",
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.MotorSpeed.place(x=554+300, y=190)
 
+        
         self.canvas.create_text(600.0, 275.0, anchor="nw", text="Force (N)",
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
