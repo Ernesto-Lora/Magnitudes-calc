@@ -9,6 +9,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import io
 
+
 import os
 import sys
 
@@ -21,6 +22,9 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
+
+def resize_image(image, factor):
+    return image.subsample(round(image.width() * factor), round(image.height() * factor))
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 images_dic = os.path.join(script_directory, "Images" )
@@ -51,6 +55,9 @@ class springUTS:
         self.variablesImage = PhotoImage(
             file= resource_path(os.path.join("Modules","Images", "variables.png" )) )
         
+        self.NoSpringWarnigImage = PhotoImage(
+            file= resource_path(os.path.join("Modules","Images", "warning.png" )) )
+        
 
         #Define buttons
         entryBorders = 5
@@ -79,8 +86,33 @@ class springUTS:
                             font=14)
 
         self.showScreen()
+
+    def NoSpringWarnig(self):
+        self.stress.delete(0, END) 
+        self.factor.delete(0, END)
+        
+        new_window = Toplevel()
+
+        new_window.geometry("{}x{}".format(self.NoSpringWarnigImage.width(), self.NoSpringWarnigImage.height()))
+
+        canvas = Canvas(
+            new_window,
+            bg = "#FFFFFF",
+            width=self.NoSpringWarnigImage.width(), height=self.NoSpringWarnigImage.height(),
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge"
+        )
+        canvas.pack(fill="both", expand=True)
+        
+        canvas.create_image(
+            0, 0, anchor= "nw",
+            image= self.NoSpringWarnigImage
+        )
+
     
     def Stress(self):
+
         D = float(self.springDiameter.get())
         D = D*1e-3 # in m
         d = float(self.wireDiameter.get() )
@@ -102,8 +134,23 @@ class springUTS:
         return s*correctionFactor
     
     def calcFactor(self):
+        D = float(self.springDiameter.get())
+        D = D*1e-3 # in m
+        d = float(self.wireDiameter.get() )
+        d = d*1e-3 #in m
+        l = float(self.length.get() )
+        l = l*1e-2
+        n = float(self.activeCoils.get() )
+
+        if (l- n*d <= 0 ):
+            self.NoSpringWarnig()
+            return
+
+
         uts = float(self.UTS.get() )
         uts = uts*1e6
+
+
         s = self.Stress()
 
         self.factor.delete(0, END)
@@ -112,7 +159,19 @@ class springUTS:
         self.stress.delete(0, END)
         self.stress.insert(0, round(s,3)) 
     
-    def plot(self):  
+    def plot(self):
+        D = float(self.springDiameter.get())
+        D = D*1e-3 # in m
+        d = float(self.wireDiameter.get() )
+        d = d*1e-3 #in m
+        l = float(self.length.get() )
+        l = l*1e-2
+        n = float(self.activeCoils.get() )
+
+        if (l- n*d <= 0 ):
+            self.NoSpringWarnig()
+            return
+          
         uts = float(self.UTS.get() )
         newuts = uts*1e6 + self.Stress()
 
