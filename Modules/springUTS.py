@@ -19,10 +19,11 @@ def resource_path(relative_path):
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS2
     except Exception:
-        base_path = os.path.abspath(".")
-        #base_path = os.path.dirname(os.path.abspath(__file__))
+        #base_path = os.path.abspath(".")
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
     return os.path.join(base_path, relative_path)
+
 
 def resize_image(image, factor):
     return image.subsample(round(image.width() * factor), round(image.height() * factor))
@@ -50,14 +51,15 @@ class springUTS:
             relief = "ridge"
         )
 
+
         self.image_image_1 = PhotoImage(
-            file= resource_path( os.path.join("Modules","Images", "logo.png" ) ) )
+           file= resource_path( os.path.join("Images", "logo.png" ) ) )
         
         self.variablesImage = PhotoImage(
-            file= resource_path(os.path.join("Modules","Images", "variables.png" )) )
+            file= resource_path(os.path.join("Images", "variables.png" )) )
         
         self.NoSpringWarnigImage = PhotoImage(
-            file= resource_path(os.path.join("Modules","Images", "warning.png" )) )
+            file= resource_path(os.path.join("Images", "warning.png" )) )
         
 
         #Define entries

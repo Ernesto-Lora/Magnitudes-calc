@@ -17,8 +17,8 @@ def resource_path(relative_path):
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS2
     except Exception:
-        base_path = os.path.abspath(".")
-        #base_path = os.path.dirname(os.path.abspath(__file__))
+        #base_path = os.path.abspath(".")
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
     return os.path.join(base_path, relative_path)
 
@@ -50,7 +50,7 @@ class boatDinamics:
         )
 
         self.image_image_1 = PhotoImage(
-            file= resource_path( os.path.join("Modules","Images", "logo.png" ) ) )
+            file= resource_path( os.path.join("Images", "logo.png" ) ) )
         
         #define all the Entries
         entryBorders = 5
