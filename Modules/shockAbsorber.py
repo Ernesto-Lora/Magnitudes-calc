@@ -21,6 +21,7 @@ def resource_path(relative_path):
         base_path = sys._MEIPASS2
     except Exception:
         base_path = os.path.abspath(".")
+        #base_path = os.path.dirname(os.path.abspath(__file__))
 
     return os.path.join(base_path, relative_path)
 
@@ -112,6 +113,14 @@ class shockAbs:
         canvas = FigureCanvasTkAgg(fig, master=new_window)
         canvas_widget = canvas.get_tk_widget()
         canvas_widget.pack()
+
+        def on_plot_close():
+            fig.clf()  # Clear the figure
+            plt.close(fig)  # Close the figure
+            new_window.destroy()
+
+        # Set the close event handler for the plot window
+        new_window.protocol("WM_DELETE_WINDOW", on_plot_close)
     
     def close(self):
         self.root.withdraw()

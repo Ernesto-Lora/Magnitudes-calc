@@ -28,7 +28,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 from ast import main
-from distutils.util import change_root
+#from distutils.util import change_root
 from tkinter import *
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg

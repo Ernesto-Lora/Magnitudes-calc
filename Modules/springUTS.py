@@ -20,6 +20,7 @@ def resource_path(relative_path):
         base_path = sys._MEIPASS2
     except Exception:
         base_path = os.path.abspath(".")
+        #base_path = os.path.dirname(os.path.abspath(__file__))
 
     return os.path.join(base_path, relative_path)
 
@@ -59,11 +60,17 @@ class springUTS:
             file= resource_path(os.path.join("Modules","Images", "warning.png" )) )
         
 
-        #Define buttons
+        #Define entries
         entryBorders = 5
-        self.stress, self.springDiameter, self.wireDiameter, self.activeCoils, self.length, self.UTS, self.factor = [ Entry(self.root,width=13,
+
+        #Input entries
+        self.springDiameter, self.wireDiameter, self.activeCoils, self.length, self.UTS = [ Entry(self.root,width=13,
                                                                          borderwidth=entryBorders,
-                                                                           font=(14)) for i in range(7)]
+                                                                         font=(14)) for i in range(5)]
+        #output entries
+        self.stress, self.factor = [ Entry(self.root,width=13, borderwidth=entryBorders, font=(14)) for i in range(2)]
+
+        #Define buttons 
         self.plot_button = Button(master = self.root,
                             width = 12,
                             height = 2,  
@@ -119,9 +126,9 @@ class springUTS:
         d = d*1e-3 #in m
         n = float(self.activeCoils.get() )
         l = float(self.length.get() )
-        l = l*1e-2
+        l = l*1e-3 #in m
 
-        diffL = 0.8*(l- n*d)
+        diffL = (l- n*d)
         # spring rate
         G = 75e9 #Pa
         c = (G*d**4)/(8*n*D**3)
@@ -139,7 +146,7 @@ class springUTS:
         d = float(self.wireDiameter.get() )
         d = d*1e-3 #in m
         l = float(self.length.get() )
-        l = l*1e-2
+        l = l*1e-3
         n = float(self.activeCoils.get() )
 
         if (l- n*d <= 0 ):
@@ -157,7 +164,7 @@ class springUTS:
         self.factor.insert(0,round( (uts + s)/uts, 3) )
         s = s*1e-6
         self.stress.delete(0, END)
-        self.stress.insert(0, round(s,3)) 
+        self.stress.insert(0, round(0.8*s,3)) #at 80%
     
     def plot(self):
         D = float(self.springDiameter.get())
@@ -165,7 +172,7 @@ class springUTS:
         d = float(self.wireDiameter.get() )
         d = d*1e-3 #in m
         l = float(self.length.get() )
-        l = l*1e-2
+        l = l*1e-3
         n = float(self.activeCoils.get() )
 
         if (l- n*d <= 0 ):
@@ -179,7 +186,7 @@ class springUTS:
 
         y0 = np.array([0.9*uts,0.5*uts])
         y1 = np.array([0.9*uts+self.Stress()*1e-6, 0.5*uts + self.Stress()*1e-6])
-        x = [1e4,1.0e5]
+        x = [1e4,1e5]
 
         fig, ax = plt.subplots()
 
@@ -191,18 +198,83 @@ class springUTS:
         ax.hlines(y=y1[0], xmin=0, xmax=1e04, color="green")
         ax.hlines(y=y1[1], xmin=1e5, xmax=1.5e05, color="green")
 
-        #plt.xlabel("Cycles")
-        ax.set_xticks([])
+        #ax.set_xticks([])
+        ax.set_xticks([0, 1e5], ['1,000', '1,000,000'])
         ax.set_ylabel("Stress Amplitde (Mpa)")
         ax.set_xlabel("cycles")
         ax.set_title("SN Curve")
         ax.legend()
     
-        new_window = Toplevel()
+        new_window = Toplevel(self.root)
         # Embed the plot in the Tkinter window
-        canvas = FigureCanvasTkAgg(fig, master=new_window)
-        canvas_widget = canvas.get_tk_widget()
-        canvas_widget.pack()
+        height = 500
+        width = 1200
+        new_window.geometry("{}x{}".format(width, height))
+
+        canvas = Canvas(
+            new_window,
+            bg = "#FFFFFF",
+            height = height,
+            width = width,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge"
+        )
+        canvas.pack(fill="both", expand=True)
+
+
+
+        canvas_widget  = FigureCanvasTkAgg(fig, master=new_window)
+        canvas_widget.draw()
+        plot_widget = canvas_widget.get_tk_widget()
+
+        canvas.create_window(0, 0, anchor='nw', window=plot_widget)
+        
+        entryBorders = 5
+
+        originalUTS, originalFatigueLimit, springUTS, springFatigueLimit = [ Entry(new_window, width=13, borderwidth=entryBorders, font=(14)) for i in range(4)]
+        font = "bebas neue"
+
+        #original UTS
+        xPosVariables = 640
+        yRelativePos = 60
+        canvas.create_text(xPosVariables, yRelativePos, anchor="nw", text="Material UTS (Mpa)",
+                                fill="#1E1E1E", font=(font, 28 * -1)
+        )
+
+        canvas.create_text(xPosVariables, yRelativePos+80, anchor="nw", text="Material Fatigue \n Limit (Mpa)",
+                                fill="#1E1E1E", font=(font, 28 * -1)
+        )
+
+        canvas.create_text(xPosVariables, yRelativePos+2*80+20, anchor="nw", text="Material + Spring \n UTS (Mpa)",
+                                fill="#1E1E1E", font=(font, 28 * -1)
+        )
+        canvas.create_text(xPosVariables, yRelativePos+3*80+30, anchor="nw", text="Material + Spring\n Fatigue Limit (Mpa)",
+                                fill="#1E1E1E", font=(font, 28 * -1)
+        )
+        xAdd = 260
+        originalUTS.place(x=xPosVariables+xAdd, y=yRelativePos)
+        originalUTS.insert(0,float(self.UTS.get()))
+
+        originalFatigueLimit.place(x=xPosVariables+xAdd, y=yRelativePos+80)
+        originalFatigueLimit.insert(0, round(0.45*float(self.UTS.get())) )
+
+        springUTS.place(x=xPosVariables+xAdd, y=yRelativePos+2*80+35)
+        springUTS.insert(0, round(float(self.UTS.get()) + self.Stress()*1e-6))
+
+        springFatigueLimit.place(x=xPosVariables+xAdd, y=yRelativePos+3*80+40)
+        springFatigueLimit.insert(0, round(0.45*(float(self.UTS.get()) + self.Stress()*1e-6)) )
+
+
+        def on_plot_close():
+            fig.clf()  # Clear the figure
+            plt.close(fig)  # Close the figure
+            new_window.destroy()
+
+        # Set the close event handler for the plot window
+        new_window.protocol("WM_DELETE_WINDOW", on_plot_close)
+
+
 
     def showVariablesImage(self):  
     
@@ -300,11 +372,11 @@ class springUTS:
         # Display the image on the canvas
         self.canvas.create_image(20, 170.0+3*80, anchor=NW, image=img)
 
-        self.canvas.create_text(38.0, 225.0+3*80, anchor="nw", text= "(No compression) (cm) ",
+        self.canvas.create_text(38.0, 225.0+3*80, anchor="nw", text= "(No compression) (mm) ",
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.length.place(x=xButtons, y=190+3*80)
-        self.length.insert(0, 5)
+        self.length.insert(0, 40)
 
         #UTS
         self.canvas.create_text(38.0, 185.0+4.5*80, anchor="nw", text="Ultimate Tensile Strength \nUTS (Spring Material) (MPa) ",
@@ -324,7 +396,7 @@ class springUTS:
                                 fill="#1E1E1E", font=(font, 32 * -1)
         )
         self.factor.place(x=xButtons+300, y=250)
-        self.computeFactorButton.place(x=xButtons+450, y=250)
+        self.computeFactorButton.place(x=xButtons+470, y=250)
 
         # Ultimate stress correction factor
         self.canvas.create_text(xButtons+150, 300, anchor="nw", text=" Stress Absorbed by the Spring (MPa)",
@@ -333,7 +405,7 @@ class springUTS:
         self.stress.place(x=xButtons+300, y=350)
 
 
-        #Plot
+        #Plot text
         self.canvas.create_text(
                 0.6*1170,
                 0.65*630,
@@ -345,8 +417,6 @@ class springUTS:
         
         # button that displays the plot 
         self.plot_button.place(x= 0.62*1170, y = 0.75*630)
-
-
 
 
         
