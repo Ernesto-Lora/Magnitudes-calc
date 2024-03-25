@@ -53,7 +53,7 @@ class shockAbs:
         )
 
         self.image_image_1 = PhotoImage(
-            file= resource_path( os.path.join("Images", "logo.png" ) ) )
+            file= resource_path( os.path.join("Modules", "Images", "logo.png" ) ) )
             
         
 
